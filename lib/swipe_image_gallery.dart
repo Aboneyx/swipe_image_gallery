@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:swipe_image_gallery/widget/transparent_route.dart';
 
 import 'util/image_gallery_controller.dart';
 import 'util/image_gallery_hero_properties.dart';
@@ -327,13 +328,21 @@ class SwipeImageGallery {
     );
 
     if (heroProperties != null) {
+      // await Navigator.of(context).push(
+      //   PageRouteBuilder(
+      //     opaque: false,
+      //     barrierDismissible: true,
+      //     fullscreenDialog: true,
+      //     transitionDuration: Duration(milliseconds: transitionDuration),
+      //     pageBuilder: (_, __, ___) => content,
+      //   ),
+      // );
       await Navigator.of(context).push(
-        PageRouteBuilder(
-          opaque: false,
-          barrierDismissible: true,
-          fullscreenDialog: true,
+        TransparentRoute(
+          backgroundColor: Colors.transparent,
           transitionDuration: Duration(milliseconds: transitionDuration),
-          pageBuilder: (_, __, ___) => content,
+          reverseTransitionDuration: Duration(milliseconds: transitionDuration),
+          builder: (BuildContext context) => content,
         ),
       );
     } else {
