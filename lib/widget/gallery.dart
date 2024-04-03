@@ -3,8 +3,8 @@ import 'package:swipe_image_gallery/util/custom_keyboard_listener.dart';
 
 import '../swipe_image_gallery.dart';
 import '../util/custom_scroll_behavior.dart';
-import 'interactive_page.dart';
 import '../util/image_gallery_hero_properties.dart';
+import 'interactive_page.dart';
 
 /// The [Gallery] widget is responsible of showing the images and enabling
 /// swiping through images using [PageView].
@@ -23,18 +23,11 @@ class Gallery extends StatefulWidget {
     this.onSwipe,
     this.heroProperties,
   })  : assert(
-          (children != null &&
-                  children.length > 0 &&
-                  itemCount == null &&
-                  itemBuilder == null) ||
-              (itemCount != null &&
-                  itemCount > 0 &&
-                  itemBuilder != null &&
-                  children == null),
+          (children != null && children.length > 0 && itemCount == null && itemBuilder == null) ||
+              (itemCount != null && itemCount > 0 && itemBuilder != null && children == null),
         ),
         assert(
-          (heroProperties != null &&
-                  heroProperties.length == (children?.length ?? itemCount)) ||
+          (heroProperties != null && heroProperties.length == (children?.length ?? itemCount)) ||
               heroProperties == null,
         );
 
@@ -62,14 +55,13 @@ class _GalleryState extends State<Gallery> {
 
   @override
   void initState() {
-    controller =
-        widget.controller ?? PageController(initialPage: widget.initialIndex);
+    controller = widget.controller ?? PageController(initialPage: widget.initialIndex);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ColoredBox(
       color: widget.backgroundColor.withOpacity(widget.opacity),
       child: SafeArea(
         child: CustomKeyboardListener(
@@ -79,19 +71,15 @@ class _GalleryState extends State<Gallery> {
             onPageChanged: widget.onSwipe,
             itemBuilder: (context, index) {
               return InteractivePage(
-                child: widget.children?[index] ??
-                    widget.itemBuilder!(context, index),
-                setScrollEnabled: (bool enabled) =>
-                    setState(() => _scrollEnabled = enabled),
+                setScrollEnabled: (bool enabled) => setState(() => _scrollEnabled = enabled),
                 setBackgroundOpacity: widget.setBackgroundOpacity,
                 dismissDragDistance: widget.dismissDragDistance,
-                heroProperties: widget.heroProperties?[index] ?? null,
+                heroProperties: widget.heroProperties?[index],
+                child: widget.children?[index] ?? widget.itemBuilder!(context, index),
               );
             },
             itemCount: widget.children?.length ?? widget.itemCount,
-            physics: _scrollEnabled
-                ? BouncingScrollPhysics()
-                : NeverScrollableScrollPhysics(),
+            physics: _scrollEnabled ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
             scrollBehavior: CustomScrollBehavior(),
           ),
         ),

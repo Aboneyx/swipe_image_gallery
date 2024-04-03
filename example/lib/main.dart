@@ -115,7 +115,7 @@ class _ImageGalleryExamplesPageState extends State<ImageGalleryExamplesPage> {
                   backgroundOpacity: 0.5,
                 ).show();
 
-                print('DOOONE');
+                debugPrint('DOOONE');
               },
               child: const Text('Open Gallery With Overlay'),
             ),

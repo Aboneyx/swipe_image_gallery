@@ -24,15 +24,14 @@ class InteractivePage extends StatefulWidget {
   _InteractivePageState createState() => _InteractivePageState();
 }
 
-class _InteractivePageState extends State<InteractivePage>
-    with TickerProviderStateMixin {
+class _InteractivePageState extends State<InteractivePage> with TickerProviderStateMixin {
   final _transformationController = TransformationController();
   late AnimationController _zoomAnimationController;
   late AnimationController _translateToCenterController;
   late AnimationController _zoomOutAnimationController;
 
   bool _zoomed = false;
-  Offset _dragPosition = Offset(0.0, 0.0);
+  Offset _dragPosition = Offset.zero;
 
   void transformListener() {
     final scale = _transformationController.value.row0.r;
@@ -76,18 +75,17 @@ class _InteractivePageState extends State<InteractivePage>
   }
 
   void animateDragPosition(double offsetY) {
-    final _offsetTween = Tween<double>(begin: offsetY, end: 0)
-        .animate(_translateToCenterController);
+    final offsetTween = Tween<double>(begin: offsetY, end: 0).animate(_translateToCenterController);
     void animationListener() {
       setState(() {
-        _dragPosition = Offset(0, _offsetTween.value);
+        _dragPosition = Offset(0, offsetTween.value);
       });
       if (_translateToCenterController.isCompleted) {
-        _offsetTween.removeListener(animationListener);
+        offsetTween.removeListener(animationListener);
       }
     }
 
-    _offsetTween.addListener(animationListener);
+    offsetTween.addListener(animationListener);
     _translateToCenterController.forward();
   }
 
@@ -95,20 +93,20 @@ class _InteractivePageState extends State<InteractivePage>
     required Matrix4 end,
     required AnimationController animationController,
   }) {
-    final _mapAnimation = Matrix4Tween(
+    final mapAnimation = Matrix4Tween(
       begin: _transformationController.value,
       end: end,
     ).animate(animationController);
 
     void animationListener() {
-      _transformationController.value = _mapAnimation.value;
+      _transformationController.value = mapAnimation.value;
 
       if (_transformationController.value == end) {
-        _mapAnimation.removeListener(animationListener);
+        mapAnimation.removeListener(animationListener);
       }
     }
 
-    _mapAnimation.addListener(animationListener);
+    mapAnimation.addListener(animationListener);
 
     animationController.forward();
   }
@@ -124,7 +122,7 @@ class _InteractivePageState extends State<InteractivePage>
     } else {
       final x = -details.localPosition.dx;
       final y = -details.localPosition.dy;
-      final scaleMultiplier = 2.0;
+      const scaleMultiplier = 2.0;
 
       final zoomedMatrix = Matrix4(
         scaleMultiplier, 0.0, 0.0, 0, //
@@ -144,7 +142,7 @@ class _InteractivePageState extends State<InteractivePage>
   void onDoubleTap() {}
 
   void onVerticalDragEndHandler(DragEndDetails details) {
-    double pixelsPerSecond = _dragPosition.dy.abs();
+    final double pixelsPerSecond = _dragPosition.dy.abs();
     if (pixelsPerSecond > (widget.dismissDragDistance)) {
       Navigator.pop(context);
     } else {
@@ -155,7 +153,8 @@ class _InteractivePageState extends State<InteractivePage>
 
   void onVerticalDragUpdateHandler(DragUpdateDetails details) {
     setState(
-        () => _dragPosition = Offset(0.0, _dragPosition.dy + details.delta.dy));
+      () => _dragPosition = Offset(0.0, _dragPosition.dy + details.delta.dy),
+    );
 
     final ratio = 1 - (_dragPosition.dy.abs() / widget.dismissDragDistance);
     widget.setBackgroundOpacity(ratio > 0 ? ratio : 0);
@@ -179,8 +178,7 @@ class _InteractivePageState extends State<InteractivePage>
                   : (_) {
                       _translateToCenterController.reset();
                     },
-              onVerticalDragUpdate:
-                  !_zoomed ? onVerticalDragUpdateHandler : null,
+              onVerticalDragUpdate: !_zoomed ? onVerticalDragUpdateHandler : null,
               onVerticalDragEnd: !_zoomed ? onVerticalDragEndHandler : null,
               onDoubleTapDown: doubleTapDownHandler,
               onDoubleTap: onDoubleTap,
@@ -193,8 +191,7 @@ class _InteractivePageState extends State<InteractivePage>
                         createRectTween: heroProps.createRectTween,
                         flightShuttleBuilder: heroProps.flightShuttleBuilder,
                         placeholderBuilder: heroProps.placeholderBuilder,
-                        transitionOnUserGestures:
-                            heroProps.transitionOnUserGestures,
+                        transitionOnUserGestures: heroProps.transitionOnUserGestures,
                         child: widget.child,
                       )
                     : widget.child,

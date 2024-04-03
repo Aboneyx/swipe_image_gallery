@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 /// passing them to the images inside the gallery.
 class ImageGalleryHeroProperties {
   const ImageGalleryHeroProperties({
-    Key? key,
     required this.tag,
     this.createRectTween,
     this.flightShuttleBuilder,

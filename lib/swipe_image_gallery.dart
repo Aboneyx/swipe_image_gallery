@@ -10,8 +10,8 @@ import 'util/image_gallery_hero_properties.dart';
 import 'widget/gallery.dart';
 import 'widget/gallery_overlay.dart';
 
-export 'util/image_gallery_hero_properties.dart';
 export 'util/image_gallery_controller.dart';
+export 'util/image_gallery_hero_properties.dart';
 
 class SwipeImageGallery {
   /// A scrollable, dismissable by swiping, zoomable, rotatable image gallery
@@ -274,16 +274,17 @@ class SwipeImageGallery {
 
   /// Shows the image gallery after initialisation.
   Future<void> show() async {
-    if (hideStatusBar)
+    if (hideStatusBar) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+    }
     var showOverlay = true;
-    double _opacity = backgroundOpacity;
+    double opacity = backgroundOpacity;
 
     final content = StatefulBuilder(
       builder: (context, setState) {
-        void _setOpacity(double opacity) {
+        void setOpacity(double op) {
           setState(() {
-            _opacity = opacity * backgroundOpacity;
+            opacity = op * backgroundOpacity;
           });
         }
 
@@ -298,7 +299,6 @@ class SwipeImageGallery {
                   }
                 },
                 child: Gallery(
-                  children: children,
                   itemBuilder: itemBuilder,
                   itemCount: itemCount,
                   initialIndex: initialIndex,
@@ -308,15 +308,16 @@ class SwipeImageGallery {
                   controller: controller,
                   onSwipe: onSwipe,
                   heroProperties: heroProperties,
-                  opacity: _opacity,
-                  setBackgroundOpacity: _setOpacity,
+                  opacity: opacity,
+                  setBackgroundOpacity: setOpacity,
+                  children: children,
                 ),
               ),
               if (overlayController != null)
                 GalleryOverlay(
                   overlayController: overlayController!,
                   showOverlay: showOverlay,
-                  opacity: _opacity,
+                  opacity: opacity,
                   initialData: initialOverlay,
                 ),
             ],
@@ -345,8 +346,6 @@ class SwipeImageGallery {
       );
     }
 
-    if (hideStatusBar)
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: SystemUiOverlay.values);
+    if (hideStatusBar) await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
   }
 }
