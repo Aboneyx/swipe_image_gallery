@@ -358,3 +358,68 @@ class SwipeImageGallery {
     if (hideStatusBar) await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
   }
 }
+
+class SwipeImageGalleryPage extends StatefulWidget {
+  final SwipeImageGallery swipeImageGallery;
+  const SwipeImageGalleryPage({
+    super.key,
+    required this.swipeImageGallery,
+  });
+
+  @override
+  State<SwipeImageGalleryPage> createState() => _SwipeImageGalleryPageState();
+}
+
+class _SwipeImageGalleryPageState extends State<SwipeImageGalleryPage> {
+  bool showOverlay = true;
+  late double opacity = widget.swipeImageGallery.backgroundOpacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        void setOpacity(double op) {
+          setState(() {
+            opacity = op * widget.swipeImageGallery.backgroundOpacity;
+          });
+        }
+
+        return Material(
+          color: Colors.transparent,
+          child: Stack(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  if (widget.swipeImageGallery.overlayController != null && widget.swipeImageGallery.hideOverlayOnTap) {
+                    setState(() => showOverlay = !showOverlay);
+                  }
+                },
+                child: Gallery(
+                  itemBuilder: widget.swipeImageGallery.itemBuilder,
+                  itemCount: widget.swipeImageGallery.itemCount,
+                  initialIndex: widget.swipeImageGallery.initialIndex,
+                  dismissDragDistance: widget.swipeImageGallery.dismissDragDistance,
+                  backgroundColor: widget.swipeImageGallery.backgroundColor,
+                  transitionDuration: widget.swipeImageGallery.transitionDuration,
+                  controller: widget.swipeImageGallery.controller,
+                  onSwipe: widget.swipeImageGallery.onSwipe,
+                  heroProperties: widget.swipeImageGallery.heroProperties,
+                  opacity: opacity,
+                  setBackgroundOpacity: setOpacity,
+                  children: widget.swipeImageGallery.children,
+                ),
+              ),
+              if (widget.swipeImageGallery.overlayController != null)
+                GalleryOverlay(
+                  overlayController: widget.swipeImageGallery.overlayController!,
+                  showOverlay: showOverlay,
+                  opacity: opacity,
+                  initialData: widget.swipeImageGallery.initialOverlay,
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
